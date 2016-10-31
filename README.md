@@ -11,12 +11,16 @@ Should only write data to disk when compiling or extracting data from archive.
 Shouldn't ovewrite anything other than compiled binary file.
 
 ## Usage
+```
 progtest.sh path/to/source-file.c [path/to/test/data/]
+```
 
 ### Examples
+```
 ../progtest.sh progtest1.c sample.tgz
 ../progtest.sh progtest1.c sample/
 ../progtest.sh progtest1
+```
 
 These 3 examples do the same thing
 
