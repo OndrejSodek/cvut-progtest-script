@@ -2,12 +2,12 @@
 Checks your program against reference data from Progtest (@ CVUT FIT)
 
 ## Description
-Automatically looks for test data, extracts those from an archive if needed.
+Automatically looks for test data, extracts those from an archive if needed.  
 Automatically compiles your program if needed.
 
 If program output differs from the reference, will print a few lines of differences.
 
-Should only write data to disk when compiling or extracting data from archive.
+Should only write data to disk when compiling or extracting data from archive.  
 Shouldn't ovewrite anything other than compiled binary file.
 
 ## Usage
