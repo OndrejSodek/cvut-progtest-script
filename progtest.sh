@@ -3,6 +3,23 @@
 version="1.5.1"
 printf "%s\n" "<======= ProgTest simulator, version: ${version} =======>"
 
+## Options ##
+
+# Change if you need to:
+#	-std=c++11 is used almost exclusively on progtest
+#	-g is for debugging (e.g. valgrind)
+#	-Wall will give all possible warnings
+#	-Werror will turn warnings to errors
+#	-pedantic is useful on progtest
+compileOptionsDef="-std=c++11 -g -Wall -Werror -pedantic"
+compileOptionsEasierDef="-std=c++11 -g -Wall"
+
+# Uncomment to warn about long long
+#compileOptionsLongDef="-Wlong-long"
+
+# Enable testing with CRLF (Windows-like) line endings
+diffOptionsDef="--strip-trailing-cr"
+
 ## Functions ##
 # Common #
 
@@ -463,10 +480,11 @@ shouldCompile() {
 
 compileSource() {
 
-	compileOptions="-Wall -Werror -pedantic"
+	compileOptions="${compileOptionsDef}"
+	longOptions="${compileOptionsLongDef}"
 
 	if [ "${2}" = "1" ]; then
-		compileOptions=""
+		compileOptions="${compileOptionsEasierDef}"
 		longOptions="-Wno-long-long"
 	fi
 
@@ -565,6 +583,8 @@ printDiff() {
 	inputFile="${1}"
 	compiledFile="${2}"
 
+	diffOptions="${diffOptionsDef}"
+
 	if ! canUseProgram "file"; then
 		printf "%s\n" "[=] Can't use program \"file\". Won't show input."
 	else
@@ -604,6 +624,8 @@ testIO() {
 	testsCounter=0
 	testsFailed=0
 	testsSortedGood=0
+
+	diffOptions="${diffOptionsDef}"
 
 	# Testing inputs outputs
 	for inputFile in "${dataFolder}/"*"_in.txt"; do
@@ -681,8 +703,6 @@ dataPath="${2}"
 sourceFile=""
 compiledFile=""
 dataFolder=""
-
-diffOptions="--strip-trailing-cr"
 
 ## Main program ##
 
