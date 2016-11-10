@@ -594,7 +594,7 @@ printDiff() {
 	fi
 	printf "%s\n" "[=] Output diff (< is your program, > is reference)"
 	printf "%s\n" "=> => => => diff output start => => => =>"
-	diff "${diffOptions}" <("${compiledFile}" < "${inputFile}") "${inputFile%in.txt}out.txt"
+	diff ${diffOptions} <("${compiledFile}" < "${inputFile}") "${inputFile%in.txt}out.txt"
 	printf "%s\n" "<= <= <= <= diff output end <= <= <= <= <="
 	printf "\n"
 }
@@ -610,7 +610,7 @@ testIO() {
 		((testsCounter++))
 		printf "%s" "[Testing] ${inputFile#${dataFolder}/} ... "
 
-		diff "${diffOptions}" <("${compiledFile}" < "${inputFile}") "${inputFile%in.txt}out.txt" > /dev/null
+		diff ${diffOptions} <("${compiledFile}" < "${inputFile}") "${inputFile%in.txt}out.txt" > /dev/null
 		tmp=$?
 
 		if [ $tmp -ne 0 ]; then
@@ -619,7 +619,7 @@ testIO() {
 				tmp=2
 
 			else
-				diff "${diffOptions}" <("${compiledFile}" < "${inputFile}" | sort) <(cat "${inputFile%in.txt}out.txt" | sort) > /dev/null
+				diff ${diffOptions} <("${compiledFile}" < "${inputFile}" | sort) <(sort "${inputFile%in.txt}out.txt") > /dev/null
 				tmp=$?
 			fi
 
