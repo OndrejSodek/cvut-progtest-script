@@ -35,6 +35,16 @@ pathsTestData="sample.tgz sample.tar.gz sample"
 # Whether to try sorting the output if unsorted comparison fails
 sortOutputIfNeeded=1
 
+# NOTE
+## Test file format has to be *_in.txt & *_out.txt (without spaces)
+### The '_' is because of _win.txt files, which break the pattern
+### You can change this if you know what you are doing
+testFileFormat="*_in.txt"
+# the minimal right part that differs between In & Out file
+diffInOutFile="in.txt"
+# the minimal right part that differs between Out & In file
+diffOutInFile="out.txt"
+
 ## Functions ##
 # Common #
 
@@ -426,15 +436,24 @@ findTestData() {
 	fi
 
 	# If format is different, you have to change it here and in input output testing
-	if [ -f "${searchPath}/0000_in.txt" ]; then
+
+	count=$(ls -1 "${searchPath}"/$testFileFormat 2>/dev/null | wc -l)
+
+	if [ $((count)) -gt 0 ]; then
 		dataFolder="${searchPath}"
 		return 0
+	fi
 
-	elif [ -f "${searchPath}/CZE/0000_in.txt" ]; then
+	count=$(ls -1 "${searchPath}"/CZE/$testFileFormat 2>/dev/null | wc -l)
+
+	if [ $((count)) -gt 0 ]; then
 		dataFolder="${searchPath}/CZE"
 		return 0
+	fi
 
-	elif [ -f "${searchPath}/ENG/0000_in.txt" ]; then
+	count=$(ls -1 "${searchPath}"/ENG/$testFileFormat 2>/dev/null | wc -l)
+
+	if [ $((count)) -gt 0 ]; then
 		dataFolder="${searchPath}/ENG"
 		return 0
 	fi
@@ -465,7 +484,7 @@ resolveData() {
 	if [ $tmp -ne 0 ]; then
 		printf "%s\n" "[ERROR] Can't find test data or they can't be read!"
 		printf "%s\n" "Hint: Use TAB for auto-complete"
-		printf "%s\n" "[Info] Files should look like 0000_in.txt (_out.txt), else update this script :)"
+		printf "%s\n" "[Info] Files should look like *in.txt (*out.txt), else update this script :)"
 		exit 7
 		return 2
 	else
@@ -629,7 +648,7 @@ printDiff() {
 	fi
 	printf "%s\n" "[=] Output diff (< is your program, > is reference)"
 	printf "%s\n" "=> => => => diff output start => => => =>"
-	diff ${diffOptions} <("${compiledFile}" < "${inputFile}") "${inputFile%in.txt}out.txt"
+	diff ${diffOptions} <("${compiledFile}" < "${inputFile}") "${inputFile%$diffInOutFile}$diffOutInFile"
 	printf "%s\n" "<= <= <= <= diff output end <= <= <= <= <="
 	printf "\n"
 }
@@ -643,11 +662,11 @@ testIO() {
 	diffOptions="${diffOptionsDef}"
 
 	# Testing inputs outputs
-	for inputFile in "${dataFolder}/"*"_in.txt"; do
+	for inputFile in "${dataFolder}/"${testFileFormat}; do
 		((testsCounter++))
 		printf "%s" "[Testing] ${inputFile#${dataFolder}/} ... "
 
-		diff ${diffOptions} <("${compiledFile}" < "${inputFile}") "${inputFile%in.txt}out.txt" > /dev/null
+		diff ${diffOptions} <("${compiledFile}" < "${inputFile}") "${inputFile%$diffInOutFile}$diffOutInFile" > /dev/null
 		tmp=$?
 
 		if [ $tmp -ne 0 ]; then
@@ -658,7 +677,7 @@ testIO() {
 					tmp=2
 
 				else
-					diff ${diffOptions} <("${compiledFile}" < "${inputFile}" | sort) <(sort "${inputFile%in.txt}out.txt") > /dev/null
+					diff ${diffOptions} <("${compiledFile}" < "${inputFile}" | sort) <(sort "${inputFile%$diffInOutFile}$diffOutInFile") > /dev/null
 					tmp=$?
 				fi
 			fi
