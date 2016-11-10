@@ -20,6 +20,21 @@ compileOptionsEasierDef="-std=c++11 -g -Wall"
 # Enable testing with CRLF (Windows-like) line endings
 diffOptionsDef="--strip-trailing-cr"
 
+# Extension to use while looking for source file
+extensionsSource="c c++ cpp cxx cc cp c+"
+
+# What possible extension can the archive with test data have
+## ! Keep in mind, that only the last part (after the last dot) is used
+extensionsTestData="tgz gz tar"
+
+# Paths to use while looking for the test data
+## List archives first
+### will use the archive only when it is newer than the folder
+pathsTestData="sample.tgz sample.tar.gz sample"
+
+# Whether to try sorting the output if unsorted comparison fails
+sortOutputIfNeeded=1
+
 ## Functions ##
 # Common #
 
@@ -138,7 +153,7 @@ resolvePaths() {
 findSourceFile() {
 
 	infoSource=""
-	extensions="c c++ cpp cxx cc cp c+"
+	extensions="${extensionsSource}"
 
 	if [ ! -f "${sourcePath}" ]; then
 
@@ -372,7 +387,7 @@ unarchive() {
 findTestData() {
 	tmpName="${1}"
 
-	extensions="tgz gz tar"
+	extensions="${extensionsTestData}"
 
 	if [ -f "${tmpName}" ]; then
 		searchPath="${tmpName}"
@@ -433,7 +448,7 @@ resolveData() {
 	tmp=$?
 
 	if [ $tmp -ne 0 ]; then
-		paths="sample.tgz sample.tar.gz sample"
+		paths="${pathsTestData}"
 
 		for path in ${paths}; do
 			tmpName="${dataPath%/}/${path}"
@@ -637,12 +652,15 @@ testIO() {
 
 		if [ $tmp -ne 0 ]; then
 
-			if ! canUseProgram "sort"; then
-				tmp=2
+			if [ $((sortOutputIfNeeded)) -gt 0 ]; then
 
-			else
-				diff ${diffOptions} <("${compiledFile}" < "${inputFile}" | sort) <(sort "${inputFile%in.txt}out.txt") > /dev/null
-				tmp=$?
+				if ! canUseProgram "sort"; then
+					tmp=2
+
+				else
+					diff ${diffOptions} <("${compiledFile}" < "${inputFile}" | sort) <(sort "${inputFile%in.txt}out.txt") > /dev/null
+					tmp=$?
+				fi
 			fi
 
 			if [ $tmp -ne 0 ]; then
@@ -688,8 +706,11 @@ resolveTesting() {
 		return 3
 	fi
 
-	if ! canUseProgram "sort"; then
-		printf "%s\n" "[Warning] Can't use sort. Won't be able to test everything."
+	if [ $((sortOutputIfNeeded)) -gt 0 ]; then
+
+		if ! canUseProgram "sort"; then
+			printf "%s\n" "[Warning] Can't use sort. Won't be able to test everything."
+		fi
 	fi
 
 	testIO
