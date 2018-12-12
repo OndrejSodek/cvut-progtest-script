@@ -1,6 +1,8 @@
 #!/bin/bash
 
-version="1.5.1"
+## README: https://github.com/OndrejSodek/cvut-progtest-script
+
+version="1.5.2"
 printf "%s\n" "<======= ProgTest simulator, version: ${version} =======>"
 
 ## Options ##
