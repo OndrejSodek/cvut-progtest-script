@@ -33,5 +33,5 @@ These 3 examples do the same thing
 * optional
 	* tar
 
-## Licence
+## License
 This project is licensed under the terms of the MIT license.
