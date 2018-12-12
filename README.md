@@ -32,3 +32,6 @@ These 3 examples do the same thing
 	* g++/gcc
 * optional
 	* tar
+
+## Licence
+This project is licensed under the terms of the MIT license.
